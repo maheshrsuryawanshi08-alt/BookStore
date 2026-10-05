@@ -1,0 +1,551 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#edf3ee">
+  <title>Reading Room | Bookstore</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #202c27;
+      --muted: #68746e;
+      --line: #dce4de;
+      --paper: #ffffff;
+      --canvas: #edf3ee;
+      --green: #17644c;
+      --green-dark: #104c3a;
+      --green-soft: #e5f0e9;
+      --coral: #c54f43;
+      --gold: #d5a848;
+      --shadow: 0 18px 54px rgb(34 59 46 / 9%);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      color: var(--ink);
+      background-color: var(--canvas);
+      background-image: repeating-linear-gradient(135deg, transparent 0 22px, rgb(60 104 77 / 3%) 22px 23px);
+      font-family: "Aptos", "Segoe UI", sans-serif;
+    }
+
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    [hidden] { display: none !important; }
+
+    .screen {
+      min-height: 100vh;
+      padding: 28px;
+    }
+
+    .login-screen {
+      display: grid;
+      place-items: center;
+    }
+
+    .login-panel {
+      width: min(100%, 440px);
+      padding: 38px;
+      border: 1px solid var(--line);
+      border-top: 4px solid var(--green);
+      border-radius: 8px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+      animation: arrive 420ms ease-out both;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 46px;
+      height: 46px;
+      margin: 0 auto 18px;
+      place-items: center;
+      border-radius: 50%;
+      color: var(--green-dark);
+      background: var(--green-soft);
+      font-family: Georgia, serif;
+      font-size: 25px;
+    }
+
+    h1, h2, p { margin-top: 0; }
+    .login-panel h1, .page-title h1 {
+      margin-bottom: 8px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-weight: 600;
+      letter-spacing: 0;
+    }
+
+    .login-panel h1 { text-align: center; font-size: 32px; }
+    .subheading { margin-bottom: 30px; color: var(--muted); text-align: center; }
+    .field { display: grid; gap: 7px; }
+    .field + .field { margin-top: 17px; }
+    label { color: #35443c; font-size: 14px; font-weight: 650; }
+
+    input {
+      width: 100%;
+      min-height: 44px;
+      padding: 10px 12px;
+      border: 1px solid #cbd6ce;
+      border-radius: 5px;
+      outline: none;
+      color: var(--ink);
+      background: #fff;
+    }
+
+    input:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgb(23 100 76 / 13%); }
+    .primary-button, .secondary-button, .danger-button {
+      min-height: 42px;
+      border: 0;
+      border-radius: 5px;
+      font-weight: 650;
+      transition: background-color 140ms ease, transform 140ms ease;
+    }
+
+    .primary-button { color: #fff; background: var(--green); }
+    .primary-button:hover { background: var(--green-dark); }
+    .primary-button:active, .secondary-button:active, .danger-button:active { transform: translateY(1px); }
+    .login-submit { width: 100%; margin-top: 24px; }
+    .secondary-button { padding: 0 14px; border: 1px solid var(--line); color: var(--ink); background: #fff; }
+    .secondary-button:hover { background: #f5f8f5; }
+    .danger-button { padding: 0 12px; color: #fff; background: var(--coral); }
+    .danger-button:hover { background: #a94036; }
+
+    .demo-note { margin: 18px 0 0; color: var(--muted); font-size: 12px; line-height: 1.5; text-align: center; }
+    .status { min-height: 0; margin: 0; color: var(--coral); font-size: 13px; }
+    .status:not(:empty) { margin-top: 14px; }
+
+    .app-screen { padding: 0 0 56px; }
+    .topbar {
+      display: flex;
+      min-height: 72px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 12px max(28px, calc((100% - 1180px) / 2));
+      border-bottom: 1px solid var(--line);
+      background: rgb(255 255 255 / 88%);
+    }
+
+    .brand { display: flex; align-items: center; gap: 11px; color: var(--green-dark); font-family: Georgia, serif; font-size: 20px; font-weight: 700; }
+    .brand .brand-mark { width: 36px; height: 36px; margin: 0; font-size: 20px; }
+    .account { display: flex; align-items: center; gap: 14px; color: var(--muted); font-size: 14px; }
+    .content { width: min(100% - 48px, 1180px); margin: 38px auto 0; }
+    .page-heading { display: flex; align-items: end; justify-content: space-between; gap: 20px; margin-bottom: 24px; }
+    .eyebrow { margin-bottom: 7px; color: var(--green); font-size: 11px; font-weight: 750; letter-spacing: 1.1px; text-transform: uppercase; }
+    .page-title h1 { margin-bottom: 5px; font-size: 34px; }
+    .page-title p { margin: 0; color: var(--muted); }
+
+    .metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid var(--line); border-radius: 6px; background: var(--paper); }
+    .metric { padding: 18px 22px; }
+    .metric + .metric { border-left: 1px solid var(--line); }
+    .metric-label { display: block; margin-bottom: 8px; color: var(--muted); font-size: 12px; }
+    .metric-value { font-family: Georgia, serif; font-size: 25px; font-weight: 700; }
+
+    .section-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 34px 0 14px; }
+    .section-heading h2 { margin: 0; font-family: Georgia, serif; font-size: 21px; }
+    .book-form { display: grid; grid-template-columns: minmax(180px, 1.5fr) minmax(160px, 1.2fr) minmax(110px, .7fr) minmax(105px, .65fr) auto; align-items: end; gap: 12px; padding: 18px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); }
+    .book-form .field { gap: 6px; }
+    .book-form label { font-size: 12px; }
+    .book-form input { min-height: 40px; }
+    .book-form button { min-width: 126px; }
+
+    .table-toolbar { display: flex; justify-content: flex-end; margin-bottom: 10px; }
+    .search { width: min(100%, 260px); min-height: 38px; }
+    .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); }
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+    th, td { padding: 13px 16px; border-bottom: 1px solid #e8ede9; vertical-align: middle; }
+    th { color: #4a5b51; background: #f6f9f6; font-size: 12px; font-weight: 700; white-space: nowrap; }
+    td { font-size: 14px; }
+    tbody tr:last-child td { border-bottom: 0; }
+    .book-title { font-weight: 650; }
+    .quantity { display: inline-grid; min-width: 32px; min-height: 27px; place-items: center; border-radius: 4px; background: var(--green-soft); color: var(--green-dark); font-size: 12px; font-weight: 700; }
+    .row-actions { display: flex; gap: 8px; }
+    .table-action { min-height: 32px; padding: 0 9px; border: 1px solid var(--line); border-radius: 4px; color: var(--ink); background: #fff; font-size: 12px; font-weight: 650; }
+    .table-action:hover { background: #f2f6f3; }
+    .table-action.remove { border-color: #f0d4d1; color: #a94036; }
+    .empty-state { padding: 28px; color: var(--muted); text-align: center; }
+    .token-details { margin-top: 22px; color: var(--muted); font-size: 12px; }
+    .token-details summary { cursor: pointer; }
+    .token-value { overflow-wrap: anywhere; padding: 10px; border: 1px solid var(--line); border-radius: 4px; background: #fff; font-family: Consolas, monospace; }
+
+    dialog { width: min(100% - 32px, 460px); padding: 0; border: 1px solid var(--line); border-radius: 7px; box-shadow: var(--shadow); }
+    dialog::backdrop { background: rgb(20 35 28 / 42%); }
+    .dialog-content { padding: 24px; }
+    .dialog-content h2 { margin-bottom: 20px; font-family: Georgia, serif; font-size: 22px; }
+    .dialog-actions { display: flex; justify-content: flex-end; gap: 9px; margin-top: 23px; }
+
+    @keyframes arrive { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    @media (max-width: 760px) {
+      .screen { padding: 18px; }
+      .topbar { padding: 12px 18px; }
+      .content { width: min(100% - 36px, 1180px); margin-top: 28px; }
+      .book-form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .book-form button { width: 100%; }
+      .page-title h1 { font-size: 29px; }
+    }
+
+    @media (max-width: 480px) {
+      .login-panel { padding: 28px 22px; }
+      .brand { font-size: 17px; }
+      .account { gap: 8px; font-size: 12px; }
+      .account .secondary-button { min-height: 36px; padding: 0 9px; font-size: 12px; }
+      .page-heading { align-items: start; }
+      .metrics { grid-template-columns: 1fr; }
+      .metric { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; }
+      .metric + .metric { border-top: 1px solid var(--line); border-left: 0; }
+      .metric-label { margin: 0; }
+      .metric-value { font-size: 20px; }
+      .book-form { grid-template-columns: 1fr; }
+      th, td { padding: 11px 12px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main id="login-screen" class="screen login-screen">
+    <section class="login-panel" aria-labelledby="login-title">
+      <div class="brand-mark" aria-hidden="true">R</div>
+      <h1 id="login-title">Welcome back</h1>
+      <p class="subheading">Sign in to manage your bookstore</p>
+      <form id="login-form">
+        <div class="field">
+          <label for="username">Username</label>
+          <input id="username" name="username" autocomplete="username" required maxlength="80" placeholder="Your username">
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" autocomplete="current-password" required maxlength="120" placeholder="Your password">
+        </div>
+        <p id="login-status" class="status" role="status" aria-live="polite"></p>
+        <button class="primary-button login-submit" type="submit">Log in</button>
+      </form>
+    </section>
+  </main>
+
+  <main id="app-screen" class="app-screen" hidden>
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">R</span> Reading Room</div>
+      <div class="account"><span id="signed-in-user"></span><button id="logout-button" class="secondary-button" type="button">Log out</button></div>
+    </header>
+
+    <div class="content">
+      <section class="page-heading" aria-label="Bookstore overview">
+        <div class="page-title">
+          <div class="eyebrow">Inventory</div>
+          <h1>Bookstore</h1>
+          <p>Your books, authors, and stock in one place.</p>
+        </div>
+      </section>
+
+      <section class="metrics" aria-label="Inventory summary">
+        <div class="metric"><span class="metric-label">Book titles</span><span id="metric-titles" class="metric-value">0</span></div>
+        <div class="metric"><span class="metric-label">Units in stock</span><span id="metric-units" class="metric-value">0</span></div>
+        <div class="metric"><span class="metric-label">Inventory value</span><span id="metric-value" class="metric-value">$0.00</span></div>
+      </section>
+
+      <section aria-labelledby="add-heading">
+        <div class="section-heading"><h2 id="add-heading">Add a book</h2></div>
+        <form id="add-book-form" class="book-form">
+          <div class="field"><label for="book-title">Title</label><input id="book-title" name="title" required maxlength="120" placeholder="Book title"></div>
+          <div class="field"><label for="book-author">Author</label><input id="book-author" name="author" required maxlength="100" placeholder="Author name"></div>
+          <div class="field"><label for="book-price">Price ($)</label><input id="book-price" name="price" type="number" min="0" step="0.01" required placeholder="0.00"></div>
+          <div class="field"><label for="book-quantity">Quantity</label><input id="book-quantity" name="quantity" type="number" min="0" step="1" value="1" required></div>
+          <button class="primary-button" type="submit">Add book</button>
+        </form>
+      </section>
+
+      <section aria-labelledby="books-heading">
+        <div class="section-heading"><h2 id="books-heading">Book list</h2></div>
+        <div class="table-toolbar"><input id="book-search" class="search" type="search" aria-label="Search books" placeholder="Search title or author"></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th scope="col">Title</th><th scope="col">Author</th><th scope="col">Price</th><th scope="col">Quantity</th><th scope="col">Actions</th></tr></thead>
+            <tbody id="book-rows"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <details class="token-details">
+        <summary>Demo session token</summary>
+        <p>This client-generated JWT is for demonstration only. A real app must validate credentials and tokens on a server.</p>
+        <div id="token-value" class="token-value"></div>
+      </details>
+    </div>
+  </main>
+
+  <dialog id="edit-dialog" aria-labelledby="edit-heading">
+    <form id="edit-book-form" class="dialog-content">
+      <h2 id="edit-heading">Edit book</h2>
+      <input type="hidden" name="id">
+      <div class="field"><label for="edit-title">Title</label><input id="edit-title" name="title" required maxlength="120"></div>
+      <div class="field"><label for="edit-author">Author</label><input id="edit-author" name="author" required maxlength="100"></div>
+      <div class="field"><label for="edit-price">Price ($)</label><input id="edit-price" name="price" type="number" min="0" step="0.01" required></div>
+      <div class="field"><label for="edit-quantity">Quantity</label><input id="edit-quantity" name="quantity" type="number" min="0" step="1" required></div>
+      <div class="dialog-actions"><button id="cancel-edit" class="secondary-button" type="button">Cancel</button><button class="primary-button" type="submit" style="padding: 0 16px">Save changes</button></div>
+    </form>
+  </dialog>
+
+  <script>
+    (() => {
+      const TOKEN_KEY = "reading-room-demo-token";
+      const BOOKS_KEY = "reading-room-books";
+      const encoder = new TextEncoder();
+      const decoder = new TextDecoder();
+      const demoSecret = encoder.encode("reading-room-demo-secret-not-for-production");
+      const defaultBooks = [
+        { id: 1, title: "Twisted Lies", author: "Ana Huang", price: 0.46, quantity: 12 },
+        { id: 2, title: "The Great Gatsby", author: "F. Scott Fitzgerald", price: 0.88, quantity: 8 },
+        { id: 3, title: "King of Envy", author: "Ana Huang", price: 0.98, quantity: 5 },
+        { id: 4, title: "The Tenant", author: "Freida McFadden", price: 0.50, quantity: 9 }
+      ];
+
+      const loginScreen = document.getElementById("login-screen");
+      const appScreen = document.getElementById("app-screen");
+      const loginForm = document.getElementById("login-form");
+      const loginStatus = document.getElementById("login-status");
+      const bookRows = document.getElementById("book-rows");
+      const searchInput = document.getElementById("book-search");
+      const editDialog = document.getElementById("edit-dialog");
+      const editForm = document.getElementById("edit-book-form");
+      let books = loadBooks();
+      let currentToken = "";
+
+      function base64UrlEncode(value) {
+        const bytes = typeof value === "string" ? encoder.encode(value) : value;
+        let binary = "";
+        bytes.forEach((byte) => { binary += String.fromCharCode(byte); });
+        return btoa(binary).replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_");
+      }
+
+      function base64UrlDecode(value) {
+        const base64 = value.replace(/-/g, "+").replace(/_/g, "/");
+        const binary = atob(base64 + "=".repeat((4 - base64.length % 4) % 4));
+        return Uint8Array.from(binary, (character) => character.charCodeAt(0));
+      }
+
+      async function importDemoKey() {
+        return crypto.subtle.importKey("raw", demoSecret, { name: "HMAC", hash: "SHA-256" }, false, ["sign", "verify"]);
+      }
+
+      async function createToken(username) {
+        const header = base64UrlEncode(JSON.stringify({ alg: "HS256", typ: "JWT" }));
+        const now = Math.floor(Date.now() / 1000);
+        const payload = base64UrlEncode(JSON.stringify({ sub: username, iat: now, exp: now + 3600 }));
+        const unsignedToken = `${header}.${payload}`;
+        const key = await importDemoKey();
+        const signature = await crypto.subtle.sign("HMAC", key, encoder.encode(unsignedToken));
+        return `${unsignedToken}.${base64UrlEncode(new Uint8Array(signature))}`;
+      }
+
+      async function readToken(token) {
+        try {
+          const parts = token.split(".");
+          if (parts.length !== 3) return null;
+          const header = JSON.parse(decoder.decode(base64UrlDecode(parts[0])));
+          const payload = JSON.parse(decoder.decode(base64UrlDecode(parts[1])));
+          if (header.alg !== "HS256" || !payload.sub || payload.exp <= Date.now() / 1000) return null;
+          const key = await importDemoKey();
+          const valid = await crypto.subtle.verify("HMAC", key, base64UrlDecode(parts[2]), encoder.encode(`${parts[0]}.${parts[1]}`));
+          return valid ? payload : null;
+        } catch {
+          return null;
+        }
+      }
+
+      function loadBooks() {
+        try {
+          const stored = localStorage.getItem(BOOKS_KEY);
+          if (stored) {
+            const parsed = JSON.parse(stored);
+            if (Array.isArray(parsed)) return parsed;
+          }
+        } catch { /* Use the starter list if browser storage is unavailable. */ }
+        return defaultBooks.map((book) => ({ ...book }));
+      }
+
+      function saveBooks() {
+        try {
+          localStorage.setItem(BOOKS_KEY, JSON.stringify(books));
+        } catch {
+          loginStatus.textContent = "Changes could not be saved in this browser.";
+        }
+      }
+
+      function money(amount) {
+        return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(Number(amount) || 0);
+      }
+
+      function addCell(row, value, className) {
+        const cell = document.createElement("td");
+        if (className) cell.className = className;
+        cell.textContent = value;
+        row.append(cell);
+        return cell;
+      }
+
+      function renderBooks() {
+        const query = searchInput.value.trim().toLocaleLowerCase();
+        const visibleBooks = books.filter((book) => `${book.title} ${book.author}`.toLocaleLowerCase().includes(query));
+        bookRows.replaceChildren();
+
+        if (visibleBooks.length === 0) {
+          const row = document.createElement("tr");
+          const cell = addCell(row, books.length ? "No books match your search." : "Your inventory is empty. Add a book to get started.");
+          cell.colSpan = 5;
+          cell.className = "empty-state";
+          bookRows.append(row);
+        }
+
+        visibleBooks.forEach((book) => {
+          const row = document.createElement("tr");
+          row.dataset.id = String(book.id);
+          addCell(row, book.title, "book-title");
+          addCell(row, book.author);
+          addCell(row, money(book.price));
+          const quantityCell = document.createElement("td");
+          const quantity = document.createElement("span");
+          quantity.className = "quantity";
+          quantity.textContent = String(book.quantity);
+          quantityCell.append(quantity);
+          row.append(quantityCell);
+
+          const actions = document.createElement("td");
+          const actionGroup = document.createElement("div");
+          actionGroup.className = "row-actions";
+          [["edit", "Edit", "table-action"], ["delete", "Delete", "table-action remove"]].forEach(([action, label, className]) => {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = className;
+            button.dataset.action = action;
+            button.textContent = label;
+            button.setAttribute("aria-label", `${label} ${book.title}`);
+            actionGroup.append(button);
+          });
+          actions.append(actionGroup);
+          row.append(actions);
+          bookRows.append(row);
+        });
+
+        document.getElementById("metric-titles").textContent = String(books.length);
+        document.getElementById("metric-units").textContent = String(books.reduce((total, book) => total + Number(book.quantity), 0));
+        document.getElementById("metric-value").textContent = money(books.reduce((total, book) => total + Number(book.price) * Number(book.quantity), 0));
+      }
+
+      function showApp(username, token) {
+        currentToken = token;
+        document.getElementById("signed-in-user").textContent = username;
+        document.getElementById("token-value").textContent = token;
+        loginScreen.hidden = true;
+        appScreen.hidden = false;
+        renderBooks();
+      }
+
+      loginForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        loginStatus.textContent = "";
+        const data = new FormData(loginForm);
+        const username = String(data.get("username")).trim();
+        const password = String(data.get("password"));
+        if (!username || !password) {
+          loginStatus.textContent = "Enter both your username and password.";
+          return;
+        }
+        if (!["Vijay1609", "Mahesh1234"].includes(username) || password !== "root") {
+          loginStatus.textContent = "Invalid username or password.";
+          return;
+        }
+        try {
+          const token = await createToken(username);
+          sessionStorage.setItem(TOKEN_KEY, token);
+          showApp(username, token);
+        } catch {
+          loginStatus.textContent = "Token creation is unavailable. Open this page in a modern browser.";
+        }
+      });
+
+      document.getElementById("logout-button").addEventListener("click", () => {
+        sessionStorage.removeItem(TOKEN_KEY);
+        currentToken = "";
+        appScreen.hidden = true;
+        loginScreen.hidden = false;
+        loginForm.reset();
+        loginStatus.textContent = "";
+        document.getElementById("username").focus();
+      });
+
+      document.getElementById("add-book-form").addEventListener("submit", (event) => {
+        event.preventDefault();
+        const data = new FormData(event.currentTarget);
+        const book = {
+          id: Date.now(),
+          title: String(data.get("title")).trim(),
+          author: String(data.get("author")).trim(),
+          price: Number(data.get("price")),
+          quantity: Number(data.get("quantity"))
+        };
+        if (!book.title || !book.author || !Number.isFinite(book.price) || !Number.isInteger(book.quantity) || book.price < 0 || book.quantity < 0) return;
+        books.push(book);
+        saveBooks();
+        event.currentTarget.reset();
+        document.getElementById("book-quantity").value = "1";
+        renderBooks();
+        document.getElementById("book-title").focus();
+      });
+
+      bookRows.addEventListener("click", (event) => {
+        const button = event.target.closest("button[data-action]");
+        if (!button) return;
+        const row = button.closest("tr");
+        const book = books.find((entry) => String(entry.id) === row.dataset.id);
+        if (!book) return;
+        if (button.dataset.action === "delete") {
+          books = books.filter((entry) => entry.id !== book.id);
+          saveBooks();
+          renderBooks();
+          return;
+        }
+        editForm.elements.id.value = String(book.id);
+        editForm.elements.title.value = book.title;
+        editForm.elements.author.value = book.author;
+        editForm.elements.price.value = String(book.price);
+        editForm.elements.quantity.value = String(book.quantity);
+        editDialog.showModal();
+      });
+
+      editForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const data = new FormData(editForm);
+        const id = Number(data.get("id"));
+        const updated = {
+          title: String(data.get("title")).trim(),
+          author: String(data.get("author")).trim(),
+          price: Number(data.get("price")),
+          quantity: Number(data.get("quantity"))
+        };
+        if (!updated.title || !updated.author || !Number.isFinite(updated.price) || !Number.isInteger(updated.quantity) || updated.price < 0 || updated.quantity < 0) return;
+        books = books.map((book) => book.id === id ? { ...book, ...updated } : book);
+        saveBooks();
+        editDialog.close();
+        renderBooks();
+      });
+
+      document.getElementById("cancel-edit").addEventListener("click", () => editDialog.close());
+      searchInput.addEventListener("input", renderBooks);
+
+      (async () => {
+        const token = sessionStorage.getItem(TOKEN_KEY);
+        const payload = token ? await readToken(token) : null;
+        if (payload) showApp(payload.sub, token);
+      })();
+    })();
+  </script>
+</body>
+</html>
